@@ -1,27 +1,31 @@
 <template>
-  <h1>Food</h1>
+  <h1>Vue Practice</h1>
+  <button v-on:click="toggleValue = !toggleValue">
+    Toggle Component: {{ toggleValue ? 'Food' : 'Ball' }}
+  </button>
   <div id="wrapper">
-    <FoodStuffs
-      v-for="x in foods"
-      :key="x.name"
-      :food-name="x.name"
-      :food-desc="x.desc"
-      :is-favorite="x.favorite"
+    <component
+      :is="activeComponent"
+      v-bind="componentProps"
       @toggle-fave="toggleFavorite"
       @remove-item="removeFoodItem"
     />
   </div>
   <br />
-  <h3>add items to the list</h3>
-  <input type="text" placeholder="name of the item" v-model="newName" required /><br />
-  <input type="text" placeholder="description of the item" v-model="newDesc" required /><br />
-  <input type="checkbox" name="Favorite" id="isFavorite" v-model="newFave" required /><br />
-  <label for="isFavorite">Favorite</label>
-  <button @click="addItem">Add Item</button>
+
+  <AddForm @add-item="addNewItem" />
+
+  <!-- <component :is="compDisplay"></component> -->
 </template>
 
 <script>
+import AddForm from './components/AddForm.vue'
+
 export default {
+  components: {
+    AddForm
+  },
+
   data() {
     return {
       foods: [
@@ -35,9 +39,39 @@ export default {
         { name: 'Fish', desc: 'Fish is an animal that lives in water.', favorite: true },
         { name: 'Cake', desc: 'Cake is something sweet that tastes good.', favorite: false }
       ],
-      newName: '',
-      newDesc: '',
-      newFave: false
+      stadiums: [
+        {
+          name: 'Camp Nou',
+          location: 'Barcelona, Spain',
+          capacity: 99354,
+          imageUrl: '/campNou.jpg'
+        },
+        {
+          name: 'Wembley Stadium',
+          location: 'London, England',
+          capacity: 90000,
+          imageUrl: '/wembley.jpg'
+        },
+        {
+          name: 'Allianz Arena',
+          location: 'Munich, Germany',
+          capacity: 75000,
+          imageUrl: '/allianzArena.jpg'
+        },
+        {
+          name: 'Old Trafford',
+          location: 'Manchester, England',
+          capacity: 74310,
+          imageUrl: '/oldTrafford.jpg'
+        },
+        {
+          name: 'Santiago Bernabéu',
+          location: 'Madrid, Spain',
+          capacity: 81044,
+          imageUrl: '/santiagoBernabeu.jpg'
+        }
+      ],
+      toggleValue: true
     }
   },
   methods: {
@@ -55,14 +89,27 @@ export default {
       }
     },
 
-    addItem() {
-      const newItem = {
-        name: this.newName,
-        desc: this.newDesc,
-        favorite: this.newFave
-      }
+    addNewItem(newItem) {
+      this.foods.push(newItem)
+      console.log('new item added')
+    }
+  },
 
-      this.foods.push(newItem), (this.newName = ''), (this.newDesc = ''), (this.newFave = false)
+  computed: {
+    activeComponent() {
+      return this.toggleValue ? 'FoodStuffs' : 'BallStuff'
+    },
+
+    componentProps() {
+      if (this.toggleValue) {
+        return {
+          foods: this.foods
+        }
+      } else {
+        return {
+          stadiums: this.stadiums
+        }
+      }
     }
   }
 }
@@ -72,12 +119,45 @@ export default {
 #wrapper {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-around;
 }
 #wrapper > div {
-  border: dashed black 1px;
-  flex-basis: 120px;
+  background-color: lightgreen;
+}
+footer > div {
+  background-color: lightpink;
+}
+#wrapper img {
+  display: block;
+  margin: 20% auto 0;
+  width: 60%;
+}
+h3,
+h4 {
+  text-align: flex-start;
+}
+
+#form {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  flex-basis: 150px;
+  border-radius: 10px;
+  border: solid black 2px;
   margin: 10px;
   padding: 10px;
-  background-color: lightgreen;
+}
+
+#ball {
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+  justify-content: space-around;
+}
+#ball img {
+  display: block;
+  margin: auto;
+  width: 80%;
+  width: 100px;
+  height: 100px;
 }
 </style>
